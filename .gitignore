@@ -399,3 +399,6 @@ FodyWeavers.xsd
 
 # OS Junk Files
 .DS_Store
+project_writeup.out
+project_writeup.synctex.gz
+project_writeup.aux

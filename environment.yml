@@ -1,0 +1,19 @@
+name: MachineLearningDataMining
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10.6
+  - numpy
+  - pandas
+  - scikit-learn
+  - scipy
+  - jupyterlab
+  - matplotlib
+  - seaborn
+  - pip
+  - pip:
+    - notebook
+    - voila
+    - shap
+# There may be an ipython module that is needed for the notebook to work

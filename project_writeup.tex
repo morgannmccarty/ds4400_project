@@ -1,0 +1,130 @@
+\documentclass[12pt]{article}
+
+\usepackage{hyperref}
+\usepackage[margin=0.5in]{geometry}
+\usepackage[fleqn]{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{listings}
+
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\argmax}{argmax}
+
+% chktex-file 44
+% chktex-file 8
+
+\title{
+    An Analysis on Biases in Comic Characters}
+\author{Morgan McCarty}
+\date{15 August 2023}
+
+\begin{document}
+    \maketitle
+    \begin{enumerate}
+        \item What question is being answered?
+        \begin{itemize}
+            \item The question here is what biases exist in comic characters and how can we determine them?
+            \item This especially focuses on those biases which are not clear and plain to see.
+            \item While it might be obvious that male characters vastly outnumber female characters in the comic world, the exact consequences and the extent of this are relatively hard to determine.
+            \item For example: in comics certain colors of hair are some of the leading indicators as to what gender a character is (see charts).
+        \end{itemize}
+        \begin{enumerate}
+            \item What is the target - categorical / continuous / group-id (for
+            unsupervised datasets)
+            \begin{itemize}
+                \item The target of the models created here are all of the categorical fields in the dataset. Each field was treated as a separate target for a unique Random Forest model.
+                \item For reference these fields are: ``ALIGN'' (the ideological alignment of good, evil, and neutral), ``SEX'' (male, female, etc.), ``EYE'' (color), ``HAIR'' (color), ``GSM'' (gender and sexuality minorities), ``ALIVE'' (living status), and ``ID'' (hidden or known identity).
+                \item The dataset is available at \href{https://github.com/fivethirtyeight/data/tree/master/comic-characters}{this link}.
+            \end{itemize}
+        \end{enumerate}
+        \item What techniques are being used for modeling?
+        \begin{itemize}
+            \item The primary technique used is Random Forests. Random Forests were chosen as they are interpretable which is very important when dealing with data which could have strong societal implications.
+        \end{itemize}
+        \begin{enumerate}
+            \item Is there a progression from high bias to low bias models?
+            \begin{itemize}
+                \item The inital models were a straight implementation of an Random Forest without any hyper parameter tuning. This was done to get a solid baseline of what could be expected from the data. \\
+                e.g.\ the model for hair and eye color performed terribly as there are so many categories for each, the data is sparse, and there is no clear correlation between the color of a character's hair (or eyes) and anything else (or so it seemed\ldots).
+                \item After the initial models were created grid-search with Stratified K-Fold cross validation was used to tune the hyper parameters of the Random Forests. This reduced the bias of the models and increased their performance.
+            \end{itemize}
+            \item Are justifications provided for using specific models?
+            \begin{itemize}
+                \item As stated before Random Forests were chosen as they are interpretable and can be used to determine feature importance.
+            \end{itemize}
+        \end{enumerate}
+        \item Complexity of the dataset:
+        \begin{itemize}
+            \item The dataset itself is not terribly complex, however many of its features have so many categories that the least frequent categories have only a few examples (see the beginning of the notebook pdf where the data was counted).
+        \end{itemize}
+        \begin{enumerate}
+            \item Are raw features used or is feature engineering applied?
+            \begin{itemize}
+                \item Raw features were not used as it was necessary to convert the categorical features into numerical features. The target feature was converted into a numerical feature using a LabelEncoder and the other features were converted into numerical features using a OneHotEncoder.
+                \item Additionally some of the fields were dropped as they did not seem to have relevence to the task at hand.
+                \item Finally, the ``FIRST APPEARANCE'' field was converted into a numerical feature through the use of a custom function.
+            \end{itemize}
+            \item How is the dimensionality of the dataset handled?
+            \begin{itemize}
+                \item The dimensionality of the dataset was handled through the use of a OneHotEncoder. This was done as the categorical features did not have any inherent order to them and using a LabelEncoder would have introduced a false sense of order to the data.
+                \item A LabelEncoder was necessary for the target features however as otherwise it would have been impossible to train the model.
+            \end{itemize}
+        \end{enumerate}
+        \item End-to-end implementation of the prediction pipeline:
+        \begin{itemize}
+            \item The prediction pipeline is as follows:
+            \begin{enumerate}
+                \item Load the data
+                \item Apply the preprocessing steps to create three separate datasets: Marvel, DC, and Combined
+                \item Create a Random Forest model for each of the target features
+                \item Apply GridSearchCV to each of the models to tune the hyperparameters
+                \item Evaluate the models
+                \item Create SHAP plots for each of the models
+                \item Create probability plots for each of the models
+            \end{enumerate}
+        \end{itemize}
+        \begin{enumerate}
+            \item Implementation done completely with pre-processing
+            \begin{itemize}
+                \item The preprocessing steps are all done in the notebook.
+            \end{itemize}
+            \item No leakage between training / test sets
+            \begin{itemize}
+                \item As everything is done with GridSearchCV there is no leakage between the training and test sets. Prior to that separation a separate test set was taken for validation as well.
+            \end{itemize}
+        \end{enumerate}
+        \item Evaluation strategies:
+        \begin{enumerate}
+            \item Correct evaluation methodology used for evaluation that reflects
+            dataset nuances
+            \begin{itemize}
+                \item All nuances in the data were looked at to the best extent to improve the quality of the models.
+            \end{itemize}
+        \end{enumerate}
+        \item What metrics are used for tuning models?
+        \begin{itemize}
+            \item The metrics used for tuning were GridSearchCV and Stratified K-Fold cross validation.
+        \end{itemize}
+        \begin{enumerate}
+            \item Correct metric selection for hyperparameter tuning
+            \begin{itemize}
+                \item As the GridSearchCV was used to tune the hyperparameters the metric used was the accuracy score, other scores were also analyzed.
+            \end{itemize}
+        \end{enumerate}
+        \item Visualization of results:
+        \begin{itemize}
+            \item Two main chart types were created, SHAP plots and probability plots.
+        \end{itemize}
+        \begin{enumerate}
+            \item Charts reflecting model performance
+            \begin{itemize}
+                \item The probability plots reflect the performance of the models. Additionally the SHAP plots help explain why the models performed the way they did.
+            \end{itemize}
+            \item All relevant metrics visualized during training and testing
+            \begin{itemize}
+                \item The accuracy score (as well as other major scores) were visualized during training and testing.
+            \end{itemize}
+        \end{enumerate}
+    \end{enumerate}
+\end{document}
